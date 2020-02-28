@@ -1,6 +1,6 @@
 <?php
 
-namespace LexicalAnalyzer;
+namespace Parser;
 
 
 class LexRules

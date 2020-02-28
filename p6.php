@@ -4,7 +4,7 @@ use SyntaxAnalyzer\Analyzer;
 
 require_once __DIR__ . '/testhelpers.php';
 
-$p = new \LexicalAnalyzer\Parser(\LexicalAnalyzer\LexRules::getSqlRules());
+$p = new \LexicalAnalyzer\Parser(Parser\LexRules::getSqlRules());
 $words = [
     ['type' => 'key', 'value' => 'CREATE'],
     ['type' => 'symbol', 'value' => '('],

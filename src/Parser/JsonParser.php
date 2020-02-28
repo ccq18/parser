@@ -27,7 +27,7 @@ class JsonParser
     public static function getLexRule()
     {
         // {"":"":,}[]
-        $r0 = \LexicalAnalyzer\LexRules::generateRules([
+        $r0 = \Parser\LexRules::generateRules([
             '[',
             ']',
             '{',

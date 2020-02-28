@@ -5,7 +5,7 @@ use  SyntaxAnalyzer\AnalyzerRules;
 
 require_once __DIR__ . '/testhelpers.php';
 
-$p = new \LexicalAnalyzer\Parser(\LexicalAnalyzer\LexRules::getSqlRules());
+$p = new \LexicalAnalyzer\Parser(Parser\LexRules::getSqlRules());
 
 $s = 'CREATE(FIELDS "aaaa",FIELDS "ccc",FIELDS "bbb",);';
 $words = $p->run($s);
