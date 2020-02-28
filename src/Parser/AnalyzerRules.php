@@ -16,8 +16,7 @@ class AnalyzerRules
     {
         $rule = ['type' => $type, 'n' => [$min, $max], 'name' => $name ?? '_' . uniqid()];
         if (!empty($r)) {
-            $rule['r'] = $r;
-        }
+            $rule['r'] = $r;}
 
         return $rule;
     }
@@ -52,7 +51,8 @@ class AnalyzerRules
     /**
      * @return
      * [
-     * 'matches' => [['type' => $type, 'n' => [$min, $max], 'name'=>]],
+     * 'matches' => [
+     * ['type' => $type, 'n' => [$min, $max], 'name'=>]],
      * 'n' => ,
      * 'after'=>
      * ]
