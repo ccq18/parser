@@ -1,0 +1,15 @@
+{
+    "name": "ccq18/parser",
+    "authors": [
+        {
+            "name": "刘荣冬",
+            "email": "rongdong.liu@aihuishou.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "": "src"
+        }
+    }
+}
