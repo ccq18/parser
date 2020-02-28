@@ -1,6 +1,6 @@
 <?php
 
-namespace SyntaxAnalyzer;
+namespace Parser;
 
 
 class AnalyzerRules
@@ -25,7 +25,8 @@ class AnalyzerRules
     protected $n;
     protected $name;
 
-    function r($type, $r = null, $name = null, $min = 1, $max = 1)
+
+    function r($r = null, $type = null, $name = null, $min = 1, $max = 1)
     {
         $this->rules[] = static::g($type, $r, $name, $min, $max);
         return $this;

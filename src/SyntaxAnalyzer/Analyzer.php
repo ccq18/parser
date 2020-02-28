@@ -43,6 +43,9 @@ class Analyzer
         while (!$this->isend($this->i)) {
             $m = true;
             foreach ($this->rules as $name => $rule) {
+                if($rule['n'][1] == 0){
+                    continue;
+                }
                 $i = $this->i;
                 //传入当前的i 若匹配成功 则i 应用
                 $m = $this->matchOne($rule, $rs, $i);
@@ -139,9 +142,11 @@ class Analyzer
                 }
                 //匹配次数不满足
                 if ($n < $r['n'][0]) {
-                    $this->log('match', [$n, $r['n'][0], $w, $r['r'] ?? "", false]);
+//                    var_dump($r);
+                    $this->log('match', [$w, $r['r'] ?? "", false,$n, $r['n'][0]]);
                     return false;
                 } else {
+//                    var_dump($r);
                     $this->log('match', [$w, $r['r'] ?? "", true]);
                 }
             }
@@ -156,11 +161,22 @@ class Analyzer
     function checkrule($rule, $word)
     {
         if (!empty($rule['r'])) {
-            if (!preg_match($rule['r'], $word['value'])) {
+            //不是正则则匹配全等
+            if($rule['r'][0]!='/'){
+                if($rule['r'] != $word['value']){
+                    return false;
+                }
+                //正则匹配调用正则
+            }else if (!preg_match($rule['r'], $word['value'])) {
                 return false;
             }
         }
-        return $rule['type'] == $word['type'];
+        if (!empty($rule['type'])) {
+            if ($rule['type'] != $word['type']) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public $matches = [];
@@ -170,71 +186,6 @@ class Analyzer
     {
         return $i >= count($this->words);
     }
-
-    function getRule()
-    {
-        return
-            [
-                'create' => [
-                    'matches' => [
-                        ['type' => 'white', 'n' => [0, 999], 'name' => 'white1'],
-                        ['r' => '/CREATE/', 'type' => 'key', 'n' => [1, 1], 'name' => 'key_create'],
-                    ]]
-            ];
-//        [
-//
-//            'create' => [
-//                'matches' => [
-//                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//                    ['r' => '/CREATE/', 'type' => 'key', 'n' => [1, 1], 'name' => 'key_create'],
-//                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//                    ['r' => '/TABLE/', 'type' => 'key', 'n' => [1, 1], 'name' => 'key_table'],
-//                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//                    ['r' => '/`.*`/', 'type' => 'name2', 'n' => [1, 1], 'name' => 'table_name'],
-//                    ['r' => '/\(/', 'type' => 'symbol', 'n' => [1, 1], 'name' => 'symbol'],
-//                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//                    ['r' => 'feild', 'type' => 'call', 'n' => [0, 999], 'name' => 'field'],
-//                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//                    ['r' => '/\)/', 'type' => 'symbol', 'n' => [1, 1], 'name' => 'symbol'],
-//                    ['r' => '/\;/', 'type' => 'symbol', 'n' => [1, 1], 'name' => 'symbol'],
-//                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//
-//                ]],
-//            'feild' => [
-//                'matches' => [
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-////                    ['r' => '/`.*`/', 'type' => 'name2', 'n' => [1, 1], 'name' => 'field_name'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//                    ['r' => '/BIGINT/', 'type' => 'key', 'n' => [1, 1], 'name' => 'keys'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-////                    ['r' => '/\(/', 'type' => 'symbol', 'n' => [1, 1], 'name' => 'symbol_end'],
-////                    ['r' => '/[0-9]+/', 'type' => 'int', 'n' => [0, 999], 'name' => 'field'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-////                    ['r' => '/\)/', 'type' => 'symbol', 'n' => [1, 1], 'name' => 'symbol_end'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-////                    ['r' => '/NOT/', 'type' => 'key', 'n' => [1, 1], 'name' => 'keys'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-////                    ['r' => '/NULL/', 'type' => 'key', 'n' => [1, 1], 'name' => 'keys'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-////                    ['r' => '/AUTO_INCREMENT/', 'type' => 'key', 'n' => [1, 1], 'name' => 'keys'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//                    ['r' => '/\,/', 'type' => 'symbol', 'n' => [0, 1], 'name' => 'keys'],
-////                    ['r' => 'white', 'type' => 'call', 'n' => [0, 999], 'name' => 'white1'],
-//
-//                ]],
-//            'white' => [
-//                'matches' => [
-//                    ['r' => '/\s+/', 'type' => 'white', 'n' => [0, 999], 'name' => 'white1'],
-//                ], 'name' => 'white'],
-//            'symbol_end' => [
-//                'matches' => [
-//                    ['r' => '/\;/', 'type' => 'symbol', 'n' => [1, 1], 'name' => 'symbol_end'],
-//                ]
-//            ],
-//        ];
-    }
-
 
 }
 

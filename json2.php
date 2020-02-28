@@ -1,7 +1,7 @@
 <?php
 
 use SyntaxAnalyzer\Analyzer;
-use  SyntaxAnalyzer\AnalyzerRules;
+use  Parser\AnalyzerRules;
 
 require_once __DIR__ . '/testhelpers.php';
 

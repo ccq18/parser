@@ -3,8 +3,9 @@
 namespace Parser;
 
 
+use LexicalAnalyzer\Parser;
 use SyntaxAnalyzer\Analyzer;
-use SyntaxAnalyzer\AnalyzerRules;
+use Parser\AnalyzerRules;
 
 class JsonParser
 {
@@ -12,7 +13,7 @@ class JsonParser
 
     function __construct()
     {
-        $this->lexParser = new \LexicalAnalyzer\Parser($this->getLexRule());
+        $this->lexParser = new Parser($this->getLexRule());
         $this->analyzer = new Analyzer($this->getAnalyzerRules());
 
     }
@@ -73,9 +74,9 @@ class JsonParser
     {
         return [
             'array' => AnalyzerRules::one()
-                ->r('symbol', '/\[/')
-                ->r('call', ['array_item'], 'items', 1, 999)
-                ->r('symbol', '/\]/')
+                ->r('/\[/', 'symbol')
+                ->r(['array_item'], 'call', 'items', 1, 999)
+                ->r('/\]/', 'symbol')
                 ->n(1, 999)
                 ->end(function ($v) {
                     $rs = [];
@@ -86,16 +87,16 @@ class JsonParser
                 })
                 ->get(),
             'array_item' => AnalyzerRules::one()
-                ->r('call', ['string', 'int'], 'value')
-                ->r('symbol', '/\,/', null, 0)
+                ->r(['string', 'int'], 'call', 'value')
+                ->r('/\,/', 'symbol', null, 0)
                 ->end(function ($v) {
                     return ['value' => $v['value'][0]];
                 })
                 ->get(),
             'object' => AnalyzerRules::one()
-                ->r('symbol', '/\{/')
-                ->r('call', ['field'], 'fields', 1, 999)
-                ->r('symbol', '/\}/')
+                ->r('/\{/', 'symbol')
+                ->r(['field'], 'call', 'fields', 1, 999)
+                ->r('/\}/', 'symbol')
                 ->n(1, 999)
                 ->end(function ($v) {
                     $rs = [];
@@ -107,22 +108,22 @@ class JsonParser
                 ->get(),
 
             'field' => AnalyzerRules::one()
-                ->r('string', '/.*/', 'key')
-                ->r('symbol', '/\:/')
-                ->r('call', ['string', 'array', 'int', 'object'], 'value')
-                ->r('symbol', '/\,/', null, 0)
+                ->r('/.*/', 'string', 'key')
+                ->r('/\:/', 'symbol')
+                ->r(['string', 'array', 'int', 'object'], 'call', 'value')
+                ->r('/\,/', 'symbol', null, 0)
                 ->end(function ($v) {
                     return ['key' => $v['key'][0]['value'], 'value' => $v['value'][0]];
                 })
                 ->get(),
             'string' => AnalyzerRules::one()
-                ->r('string', null, 'value')
+                ->r(null, 'string', 'value')
                 ->end(function ($v) {
                     return $v['value'][0]['value'];
                 })
                 ->get(),
             'int' => AnalyzerRules::one()
-                ->r('int', null, 'value')
+                ->r(null, 'int', 'value')
                 ->end(function ($v) {
                     return $v['value'][0]['value'];
                 })
