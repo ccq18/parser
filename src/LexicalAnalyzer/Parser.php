@@ -6,7 +6,7 @@ namespace LexicalAnalyzer;
 class Parser
 {
 
-    protected $words = [];
+    protected $words;
     protected $i;
     protected $s;
 
@@ -15,7 +15,7 @@ class Parser
 
     function __construct($rules)
     {
-        $this->rules = $rules;//$this->getSqlRules();
+        $this->rules = $rules;
     }
 
     /**
@@ -26,7 +26,7 @@ class Parser
     {
         $this->i = 0;
         $this->s = $s;
-
+        $this->words = [];
         while (!$this->isend()) {
             if (!$this->match()) {
                 exit('匹配失败' . $this->s[$this->i]);

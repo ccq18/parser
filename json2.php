@@ -9,11 +9,11 @@ $p = new \Parser\JsonParser();
 
 $ss = [
     '{"a":{"a":"b","c":"333"},"c":"b"}',
-    '["a","q"]',
-    '{"a":"bb","c":"b"}',
-    '{"a":{"a":"b","c":"333"},"c":["a","q"],"d":"222"}'
+    '["e","q"]',
+    '{"f":"bb","c":"b"}',
+    '{"g":{"a":"b","c":333},"c":["a","q"],"d":"222","e":""}'
 ];
 foreach ($ss as $s) {
     $rs = $p->parser($s);
-    print_r($rs);
+    var_dump("json:", $s, 'value:', $rs);
 }

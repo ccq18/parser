@@ -75,13 +75,13 @@ class JsonParser
         return [
             'array' => AnalyzerRules::one()
                 ->r('/\[/', 'symbol')
-                ->r(['array_item'], 'call', 'items', 1, PHP_INT_MAX)
+                ->r('array_item', 'call', 'items', 1, PHP_INT_MAX)
                 ->r('/\]/', 'symbol')
                 ->n(1, PHP_INT_MAX)
-                ->end(function ($v) {
+                ->after(function ($v) {
                     $rs = [];
-                    foreach ($v['items'] as $v) {
-                        $rs[] = $v['value'];
+                    foreach ($v['items'] as $vv) {
+                        $rs[] = $vv['value'];
                     }
                     return $rs;
                 })
@@ -89,8 +89,8 @@ class JsonParser
             'array_item' => AnalyzerRules::one()
                 ->r(['string', 'int'], 'call', 'value')
                 ->r('/\,/', 'symbol', null, 0)
-                ->end(function ($v) {
-                    return ['value' => $v['value'][0]];
+                ->after(function ($v) {
+                    return ['value' => $v['value'][0]['value']];
                 })
                 ->get(),
             'object' => AnalyzerRules::one()
@@ -98,33 +98,34 @@ class JsonParser
                 ->r(['field'], 'call', 'fields', 1, PHP_INT_MAX)
                 ->r('/\}/', 'symbol')
                 ->n(1, PHP_INT_MAX)
-                ->end(function ($v) {
+                ->after(function ($v) {
                     $rs = [];
-                    foreach ($v['fields'] as $v) {
-                        $rs[$v['key']] = $v['value'];
+                    foreach ($v['fields'] as $vv) {
+                        $rs[$vv['value']['key']] = $vv['value']['value'];
                     }
                     return $rs;
                 })
                 ->get(),
 
             'field' => AnalyzerRules::one()
-                ->r('/.*/', 'string', 'key')
+                ->r('string', 'call', 'key')
                 ->r('/\:/', 'symbol')
                 ->r(['string', 'array', 'int', 'object'], 'call', 'value')
                 ->r('/\,/', 'symbol', null, 0)
-                ->end(function ($v) {
-                    return ['key' => $v['key'][0]['value'], 'value' => $v['value'][0]];
+                ->after(function ($v) {
+//                    print_r($v);exit;
+                    return ['key' => $v['key'][0], 'value' => $v['value'][0]['value']];
                 })
                 ->get(),
             'string' => AnalyzerRules::one()
                 ->r(null, 'string', 'value')
-                ->end(function ($v) {
+                ->after(function ($v) {
                     return $v['value'][0]['value'];
                 })
                 ->get(),
             'int' => AnalyzerRules::one()
                 ->r(null, 'int', 'value')
-                ->end(function ($v) {
+                ->after(function ($v) {
                     return $v['value'][0]['value'];
                 })
                 ->get(),

@@ -38,16 +38,13 @@ class AnalyzerRules
         return $this;
     }
 
-    function end($func)
+    function after($func)
     {
         $this->func = $func;
         return $this;
     }
 
-    function after()
-    {
 
-    }
 
     /**
      * @return

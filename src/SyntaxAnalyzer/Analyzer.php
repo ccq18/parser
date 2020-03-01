@@ -5,7 +5,7 @@ namespace SyntaxAnalyzer;
 
 class Analyzer
 {
-    protected $grammars = [];
+    protected $grammars ;
     protected $words;
     protected $i;
     protected $rules;
@@ -24,7 +24,7 @@ class Analyzer
 
     function __construct($rules)
     {
-        $this->i = 0;
+
         $this->rules = $rules;
     }
 
@@ -40,6 +40,8 @@ class Analyzer
     function run($words)
     {
         $this->words = $words;
+        $this->i = 0;
+        $this->grammars = [];
         while (!$this->isend($this->i)) {
             $m = true;
             foreach ($this->rules as $name => $rule) {
@@ -84,7 +86,7 @@ class Analyzer
                 foreach ($rule as $rr) {
                     $i0 = $i;
                     if ($this->matchOne($this->rules[$rr], $result, $i0)) {
-                        $rs[] = $result;
+                        $rs[] = ['r' => $rr, 'value' => $result];
                         $i = $i0;
                         $n++;
                         $m = true;
@@ -121,7 +123,7 @@ class Analyzer
 
             if ($r['type'] == 'call') {
                 $i0 = $i;
-
+                $result = [];
                 if ($this->matchNum($r['r'], $result, $i0, $r['n'][0], $r['n'][1] ?? null)) {
                     $rs[$r['name']] = $result;
                     $i = $i0;

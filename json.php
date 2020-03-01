@@ -21,7 +21,7 @@ $rules = [
         ->r(['array_item'], 'call', 'items', 1, PHP_INT_MAX)
         ->r('/\]/', 'symbol')
         ->n(1, PHP_INT_MAX)
-        ->end(function ($v) {
+        ->after(function ($v) {
             $rs = [];
             foreach ($v['items'] as $v) {
                 $rs[] = $v['value'];
@@ -32,7 +32,7 @@ $rules = [
     'array_item' => AnalyzerRules::one()
         ->r(['string', 'int'], 'call', 'value')
         ->r('/\,/', 'symbol', null, 0)
-        ->end(function ($v) {
+        ->after(function ($v) {
             return ['value' => $v['value'][0]];
         })
         ->get(),
@@ -41,7 +41,7 @@ $rules = [
         ->r(['field'], 'call', 'fields', 1, PHP_INT_MAX)
         ->r('/\}/', 'symbol')
         ->n(1, PHP_INT_MAX)
-        ->end(function ($v) {
+        ->after(function ($v) {
             $rs = [];
             foreach ($v['fields'] as $v) {
                 $rs[$v['key']] = $v['value'];
@@ -55,19 +55,19 @@ $rules = [
         ->r('/\:/', 'symbol')
         ->r(['string', 'array', 'int', 'object'], 'call', 'value')
         ->r('/\,/', 'symbol', null, 0)
-        ->end(function ($v) {
+        ->after(function ($v) {
             return ['key' => $v['key'][0]['value'], 'value' => $v['value'][0]];
         })
         ->get(),
     'string' => AnalyzerRules::one()
         ->r(null, 'string', 'value')
-        ->end(function ($v) {
+        ->after(function ($v) {
             return $v['value'][0]['value'];
         })
         ->get(),
     'int' => AnalyzerRules::one()
         ->r(null, 'int', 'value')
-        ->end(function ($v) {
+        ->after(function ($v) {
             return $v['value'][0]['value'];
         })
         ->get(),

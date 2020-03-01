@@ -18,11 +18,20 @@ class BnfParser
 
     }
 
+    /**
+     * @param $s
+     * @return [
+     * ]
+     */
     function parser($s)
     {
         $words = $this->lexParser->run($s);
         $rs = $this->analyzer->run($words);
-        return $rs[0]['value'];
+        $rr = [];
+        foreach ($rs as $v){
+            $rr[]  = $v['value'][0];
+        }
+        return $rr;
     }
 
     public static function getLexRule()
@@ -36,8 +45,6 @@ class BnfParser
             '(',
             ')',
             '|',
-//            '<',
-//            '>',
             '::=',
             ';',
         ], 'symbol');
@@ -47,9 +54,7 @@ class BnfParser
             ['matches' => [
                 ['r' => '/[\s]/', 'n' => [1, PHP_INT_MAX]],
             ], 'type' => 'white'],
-//            ['matches' => [
-//                ['r' => '/[_a-zA-Z]/i', 'n' => [1, 1]],
-//                ['r' => '/[_a-zA-Z0-9]/i', 'n' => [0, 999]]], 'type' => 'key'],
+
             //浮点数
             ['matches' => [
                 ['r' => '/[0-9]/i', 'n' => [1, PHP_INT_MAX]],
@@ -99,7 +104,6 @@ class BnfParser
 ////具有相同左部的规则可以共用一个左部，各右部之间以直竖“|”隔开
 
 
-
 //<rule> ::= <identifier> "::=" <expression>
 //<expression> ::= <factor> {term}
 //<term> ::= "|" <factor>
@@ -113,62 +117,111 @@ class BnfParser
     {
         return [
             'rule' => AnalyzerRules::one()
-                ->r(['rule1'], 'call', 'rule')
-                ->r(['rule2'], 'call', 'expression',0,PHP_INT_MAX)
-                ->r(null, 'white')
+                ->r('rule1', 'call', 'rule1')
+                ->r('rule2', 'call', 'rule2', 0, PHP_INT_MAX)
+                ->after(function ($v) {
+                    $vv = [];
+                    if(isset($v['rule1'])){
+                        $vv = array_merge($vv,$v['rule1']);
+                    }
+                    if(isset($v['rule2'])){
+                        $vv = array_merge($vv,$v['rule2']);
+                    }
+
+                    return $vv;
+                })
                 ->get(),
             'rule1' => AnalyzerRules::one()
-                ->r(['identifier'], 'call', 'rule')
+                ->r('identifier', 'call', 'rule')
                 ->r("::=")
-                ->r(['expression'], 'call', 'expression')
-                ->r(null, 'white')
+                ->r('expression', 'call', 'expression')
+                ->r(null, 'white', null, 0, 1)
+                ->after(function ($v) {
+                    $rs = [];
+                    $rs['rule'] = $v['rule'][0];
+                    $rs['expression'] = $v['expression'][0];
+                    return $rs;
+                })
+                ->n(0, 0)
                 ->get(),
             'rule2' => AnalyzerRules::one()
                 ->r(null, 'white')
-                ->r(['identifier'], 'call', 'rule')
+                ->r('identifier', 'call', 'rule')
                 ->r("::=")
-                ->r(['expression'], 'call', 'expression')
+                ->r('expression', 'call', 'expression')
                 ->r(null, 'white')
+                ->after(function ($v) {
+                    $rs = [];
+                    $rs['rule'] = $v['rule'][0];
+                    $rs['expression'] = $v['expression'][0];
+                    return $rs;
+                })
+                ->n(0, 0)
                 ->get(),
             'expression' => AnalyzerRules::one()
-                ->r(['factor'], 'call', 'identifier',1,PHP_INT_MAX)
-                ->r(['term'], 'call', 'term', 0, PHP_INT_MAX)
-                ->n(0,0)
+                ->r('factor', 'call', 'factor', 1, PHP_INT_MAX)
+                ->r('term', 'call', 'term', 0, PHP_INT_MAX)
+                ->after(function ($v) {
+                    return array_merge($v['factor'],$v['term']);
+                })
+                ->n(0, 0)
                 ->get(),
             'term' => AnalyzerRules::one()
                 ->r("|")
-                ->r(['factor'])
-                ->n(0,0)
+                ->r('factor',null,'factor')
+                ->after(function ($v) {
+                    print_r($v);exit();
+                    return $v;
+                })
+                ->n(0, 0)
                 ->get(),
             'factor' => AnalyzerRules::one()
                 ->r(['identifier', 'quoted_symbol', 'expression_c', 'expression_d', 'expression_e'], 'call', 'factor')
-                ->n(0,0)
+                ->after(function ($v) {
+                    return $v['factor'][0];
+                })
+                ->n(0, 0)
                 ->get(),
             'expression_c' => AnalyzerRules::one()
                 ->r("(")
                 ->r(['expression'], 'call', 'expression')
                 ->r(")")
-                ->n(0,0)
+                ->after(function ($v) {
+                    return $v['expression'][0]['value'];
+                })
+                ->n(0, 0)
                 ->get(),
             'expression_d' => AnalyzerRules::one()
                 ->r("[")
                 ->r(['expression'], 'call', 'expression')
                 ->r("]")
-                ->n(0,0)
+                ->after(function ($v) {
+                    return $v['expression'][0]['value'];
+                })
+                ->n(0, 0)
                 ->get(),
             'expression_e' => AnalyzerRules::one()
                 ->r("{")
                 ->r(['expression'], 'call', 'expression')
                 ->r("}")
-                ->n(0,0)
+                ->after(function ($v) {
+                    return $v['expression'][0]['value'];
+                })
+                ->n(0, 0)
                 ->get(),
             'quoted_symbol' => AnalyzerRules::one()
-                ->r(null, 'string', 'expression')
-                ->n(0,0)
+                ->r(null, 'string', 'value')
+                ->after(function ($v) {
+                    return $v['value'][0]['value'];
+                })
+                ->n(0, 0)
                 ->get(),
             'identifier' => AnalyzerRules::one()
-                ->r(null, 'key', 'expression')
-                ->n(0,0)
+                ->r(null, 'key', 'value')
+                ->after(function ($v) {
+                    return $v['value'][0]['value'];
+                })
+                ->n(0, 0)
                 ->get(),
 
         ];
