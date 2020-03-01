@@ -13,10 +13,10 @@ $rules = [
     'create' => AnalyzerRules::one()
         ->r('/CREATE/', 'key')
         ->r('/\(/', 'symbol')
-        ->r('create_content', 'call', 'fields', 1, 999)
+        ->r('create_content', 'call', 'fields', 1, PHP_INT_MAX)
         ->r('/\)/', 'symbol')
         ->r('/\;/', 'symbol')
-        ->n(1, 999)
+        ->n(1, PHP_INT_MAX)
         ->get(),
     'create_content' => AnalyzerRules::one()
         ->r('/FIELDS/', 'key')

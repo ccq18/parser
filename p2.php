@@ -23,7 +23,7 @@ $words = [
 
 $rule = [
     'matches' => [
-        ['type' => 'white', 'n' => [0, 999], 'name' => 'white1'],
+        ['type' => 'white', 'n' => [0, PHP_INT_MAX], 'name' => 'white1'],
         ['r' => '/CREATE/', 'type' => 'key', 'n' => [1, 1], 'name' => 'key_create'],
     ]];
 $g = new Analyzer(null);

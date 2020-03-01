@@ -32,7 +32,7 @@ class AnalyzerRules
         return $this;
     }
 
-    function n($min = 1, $max = 999)
+    function n($min = 1, $max = PHP_INT_MAX)
     {
         $this->n = [$min, $max];
         return $this;
@@ -62,7 +62,7 @@ class AnalyzerRules
     {
         return [
             'matches' => $this->rules,
-            'n' => $this->n ?? [1, 999],
+            'n' => $this->n ?? [1, PHP_INT_MAX],
             'after' => $this->func ?? function ($v) {
                     return $v;
                 }

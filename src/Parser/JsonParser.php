@@ -40,29 +40,29 @@ class JsonParser
         $rules = [
             //空白
             ['matches' => [
-                ['r' => '/[\s]/', 'n' => [1, 999]],
+                ['r' => '/[\s]/', 'n' => [1, PHP_INT_MAX]],
             ], 'type' => 'white'],
             //浮点数
             ['matches' => [
-                ['r' => '/[0-9]/i', 'n' => [1, 999]],
+                ['r' => '/[0-9]/i', 'n' => [1, PHP_INT_MAX]],
                 ['r' => '/\./', 'n' => [1, 1]],
-                ['r' => '/[0-9]/i', 'n' => [1, 999]]
+                ['r' => '/[0-9]/i', 'n' => [1, PHP_INT_MAX]]
 
             ], 'type' => 'number'],
             //整数
             ['matches' => [
-                ['r' => '/[0-9]/i', 'n' => [1, 999]],
+                ['r' => '/[0-9]/i', 'n' => [1, PHP_INT_MAX]],
             ], 'type' => 'int'],
             //字符串
             ['matches' => [
                 ['r' => '/"/', 'n' => [1, 1]],
-                ['r' => '/[^"]/i', 'n' => [1, 999]],
+                ['r' => '/[^"]/i', 'n' => [0, PHP_INT_MAX]],
                 ['r' => '/"/', 'n' => [1, 1]]
             ], 'type' => 'string'],
             //字符串2
             ['matches' => [
                 ['r' => '/\'/', 'n' => [1, 1]],
-                ['r' => '/[^\']/i', 'n' => [1, 999]],
+                ['r' => '/[^\']/i', 'n' => [1, PHP_INT_MAX]],
                 ['r' => '/\'/', 'n' => [1, 1]]
             ], 'type' => 'string'],
         ];
@@ -75,9 +75,9 @@ class JsonParser
         return [
             'array' => AnalyzerRules::one()
                 ->r('/\[/', 'symbol')
-                ->r(['array_item'], 'call', 'items', 1, 999)
+                ->r(['array_item'], 'call', 'items', 1, PHP_INT_MAX)
                 ->r('/\]/', 'symbol')
-                ->n(1, 999)
+                ->n(1, PHP_INT_MAX)
                 ->end(function ($v) {
                     $rs = [];
                     foreach ($v['items'] as $v) {
@@ -95,9 +95,9 @@ class JsonParser
                 ->get(),
             'object' => AnalyzerRules::one()
                 ->r('/\{/', 'symbol')
-                ->r(['field'], 'call', 'fields', 1, 999)
+                ->r(['field'], 'call', 'fields', 1, PHP_INT_MAX)
                 ->r('/\}/', 'symbol')
-                ->n(1, 999)
+                ->n(1, PHP_INT_MAX)
                 ->end(function ($v) {
                     $rs = [];
                     foreach ($v['fields'] as $v) {

@@ -13,14 +13,14 @@ require_once __DIR__ . '/testhelpers.php';
 //<expression_e>::="{" <expression> "}"
 //<identifier> ::= letter { letter | digit }
 //<quoted_symbol> ::= ""
-$s = '<rule>::=<identifier>"::="<expression>
-<rule>::=<identifier>"::="<expression>
+$s = '<rule>::=<identifier>"::="<expression>"::="<hello>
+<hello>::=<identifier>"::="<expression><bb>
 ';
 $lexParser = new Parser(\Parser\BnfParser::getLexRule());
 $words = $lexParser->run($s);
 //print_r($words);
 $analyzer = new Analyzer(\Parser\BnfParser::getAnalyzerRules());
 $rs = $analyzer->run($words);
-//print_r($rs);
+print_r($rs);
 var_dump(count($rs));
 //$analyzer->showLog();

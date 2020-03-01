@@ -45,37 +45,37 @@ class BnfParser
         $rules = [
             //空白
             ['matches' => [
-                ['r' => '/[\s]/', 'n' => [1, 999]],
+                ['r' => '/[\s]/', 'n' => [1, PHP_INT_MAX]],
             ], 'type' => 'white'],
 //            ['matches' => [
 //                ['r' => '/[_a-zA-Z]/i', 'n' => [1, 1]],
 //                ['r' => '/[_a-zA-Z0-9]/i', 'n' => [0, 999]]], 'type' => 'key'],
             //浮点数
             ['matches' => [
-                ['r' => '/[0-9]/i', 'n' => [1, 999]],
+                ['r' => '/[0-9]/i', 'n' => [1, PHP_INT_MAX]],
                 ['r' => '/\./', 'n' => [1, 1]],
-                ['r' => '/[0-9]/i', 'n' => [1, 999]]
+                ['r' => '/[0-9]/i', 'n' => [1, PHP_INT_MAX]]
 
             ], 'type' => 'number'],
             //整数
             ['matches' => [
-                ['r' => '/[0-9]/i', 'n' => [1, 999]],
+                ['r' => '/[0-9]/i', 'n' => [1, PHP_INT_MAX]],
             ], 'type' => 'int'],
             ['matches' => [
                 ['r' => '/\</', 'n' => [1, 1]],
-                ['r' => '/[a-zA-Z0-9]/i', 'n' => [1, 999]],
+                ['r' => '/[a-zA-Z0-9]/i', 'n' => [1, PHP_INT_MAX]],
                 ['r' => '/\>/', 'n' => [1, 1]],
             ], 'type' => 'key'],
             //字符串
             ['matches' => [
                 ['r' => '/"/', 'n' => [1, 1]],
-                ['r' => '/[^"]/i', 'n' => [1, 999]],
+                ['r' => '/[^"]/i', 'n' => [1, PHP_INT_MAX]],
                 ['r' => '/"/', 'n' => [1, 1]]
             ], 'type' => 'string'],
             //字符串2
 //            ['matches' => [
 //                ['r' => '/\'/', 'n' => [1, 1]],
-//                ['r' => '/[^\']/i', 'n' => [1, 999]],
+//                ['r' => '/[^\']/i', 'n' => [1, PHP_INT_MAX]],
 //                ['r' => '/\'/', 'n' => [1, 1]]
 //            ], 'type' => 'string'],
         ];
@@ -113,14 +113,26 @@ class BnfParser
     {
         return [
             'rule' => AnalyzerRules::one()
+                ->r(['rule1'], 'call', 'rule')
+                ->r(['rule2'], 'call', 'expression',0,PHP_INT_MAX)
+                ->r(null, 'white')
+                ->get(),
+            'rule1' => AnalyzerRules::one()
+                ->r(['identifier'], 'call', 'rule')
+                ->r("::=")
+                ->r(['expression'], 'call', 'expression')
+                ->r(null, 'white')
+                ->get(),
+            'rule2' => AnalyzerRules::one()
+                ->r(null, 'white')
                 ->r(['identifier'], 'call', 'rule')
                 ->r("::=")
                 ->r(['expression'], 'call', 'expression')
                 ->r(null, 'white')
                 ->get(),
             'expression' => AnalyzerRules::one()
-                ->r(['factor'], 'call', 'identifier',1,999)
-                ->r(['term'], 'call', 'term', 0, 999)
+                ->r(['factor'], 'call', 'identifier',1,PHP_INT_MAX)
+                ->r(['term'], 'call', 'term', 0, PHP_INT_MAX)
                 ->n(0,0)
                 ->get(),
             'term' => AnalyzerRules::one()

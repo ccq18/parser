@@ -27,10 +27,10 @@ $rules = [
         'matches' => [
             ['r' => '/CREATE/', 'type' => 'key', 'n' => [1, 1], 'name' => 'key_create'],
             ['r' => '/\(/', 'type' => 'symbol', 'n' => [1, 1], 'name' => 'symbol'],
-            ['r' => 'create_content', 'type' => 'call', 'n' => [1, 999], 'name' => 'fields'],
+            ['r' => 'create_content', 'type' => 'call', 'n' => [1, PHP_INT_MAX], 'name' => 'fields'],
             ['r' => '/\)/', 'type' => 'symbol', 'n' => [1, 1], 'name' => 'symbol'],
         ],
-        'n' => [1, 999],
+        'n' => [1, PHP_INT_MAX],
         'name'=>'create',
 
     ],
@@ -40,11 +40,11 @@ $rules = [
             ['r' => '/.*/', 'type' => 'string', 'n' => [1, 1], 'name' => 'field'],
             ['r' => '/\,/', 'type' => 'symbol', 'n' => [0, 1], 'name' => 'symbol'],
         ],
-        'n' => [1, 999],
+        'n' => [1, PHP_INT_MAX],
         'name'=>'create_content',
     ]
 ];
-$g = new Analyzer($words, $rules);
+$g = new Analyzer($rules);
 $g->setWords($words);
 
 $i = 0;

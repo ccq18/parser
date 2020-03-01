@@ -18,9 +18,9 @@ $words = $p->run($s);
 $rules = [
     'array' => AnalyzerRules::one()
         ->r('/\[/', 'symbol')
-        ->r(['array_item'], 'call', 'items', 1, 999)
+        ->r(['array_item'], 'call', 'items', 1, PHP_INT_MAX)
         ->r('/\]/', 'symbol')
-        ->n(1, 999)
+        ->n(1, PHP_INT_MAX)
         ->end(function ($v) {
             $rs = [];
             foreach ($v['items'] as $v) {
@@ -38,9 +38,9 @@ $rules = [
         ->get(),
     'object' => AnalyzerRules::one()
         ->r('/\{/', 'symbol')
-        ->r(['field'], 'call', 'fields', 1, 999)
+        ->r(['field'], 'call', 'fields', 1, PHP_INT_MAX)
         ->r('/\}/', 'symbol')
-        ->n(1, 999)
+        ->n(1, PHP_INT_MAX)
         ->end(function ($v) {
             $rs = [];
             foreach ($v['fields'] as $v) {
