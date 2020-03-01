@@ -43,9 +43,12 @@ class Analyzer
         while (!$this->isend($this->i)) {
             $m = true;
             foreach ($this->rules as $name => $rule) {
-                if($rule['n'][1] == 0){
-                    continue;
+                if (isset($rule['n'][1])) {
+                    if ($rule['n'][1] == 0) {
+                        continue;
+                    }
                 }
+
                 $i = $this->i;
                 //传入当前的i 若匹配成功 则i 应用
                 $m = $this->matchOne($rule, $rs, $i);
@@ -70,9 +73,12 @@ class Analyzer
     {
         $n = 0;
         while (!$this->isend($i)) {
-            if ($n >= $max) {
-                break;
+            if (isset($max)) {
+                if ($n >= $max) {
+                    break;
+                }
             }
+
             if (is_array($rule)) {
                 $m = false;
                 foreach ($rule as $rr) {
@@ -116,7 +122,7 @@ class Analyzer
             if ($r['type'] == 'call') {
                 $i0 = $i;
 
-                if ($this->matchNum($r['r'], $result, $i0, $r['n'][0], $r['n'][1])) {
+                if ($this->matchNum($r['r'], $result, $i0, $r['n'][0], $r['n'][1] ?? null)) {
                     $rs[$r['name']] = $result;
                     $i = $i0;
                 } else {
@@ -129,8 +135,10 @@ class Analyzer
                 while (!$this->isend($i)) {
                     //匹配结束 退出
                     //超过最大匹配次数则跳出当前
-                    if ($n >= $r['n'][1]) {
-                        break;
+                    if (isset($r['n'][1])) {
+                        if ($n >= $r['n'][1]) {
+                            break;
+                        }
                     }
                     if (!$this->checkrule($r, $this->words[$i])) {
                         break;
@@ -143,7 +151,7 @@ class Analyzer
                 //匹配次数不满足
                 if ($n < $r['n'][0]) {
 //                    var_dump($r);
-                    $this->log('match', [$w, $r['r'] ?? "", false,$n, $r['n'][0]]);
+                    $this->log('match', [$w, $r['r'] ?? "", false, $n, $r['n'][0]]);
                     return false;
                 } else {
 //                    var_dump($r);
@@ -162,12 +170,12 @@ class Analyzer
     {
         if (!empty($rule['r'])) {
             //不是正则则匹配全等
-            if($rule['r'][0]!='/'){
-                if($rule['r'] != $word['value']){
+            if ($rule['r'][0] != '/') {
+                if ($rule['r'] != $word['value']) {
                     return false;
                 }
                 //正则匹配调用正则
-            }else if (!preg_match($rule['r'], $word['value'])) {
+            } else if (!preg_match($rule['r'], $word['value'])) {
                 return false;
             }
         }

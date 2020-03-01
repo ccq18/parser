@@ -53,9 +53,12 @@ class Parser
                     $this->i++;
                     $n++;
                     //超过最大匹配次数则跳出当前
-                    if ($n == $r['n'][1]) {
-                        break;
+                    if(isset($r['n'][1])){
+                        if ($n == $r['n'][1]) {
+                            break;
+                        }
                     }
+
                 }
                 if (!($n >= $r['n'][0])) {
                     $m = false;
