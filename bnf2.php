@@ -11,7 +11,7 @@ require_once __DIR__ . '/testhelpers.php';
 //<identifier> ::= letter { letter | digit }
 //<quoted_symbol> ::= ""
 $s = '<rule>::=<identifier>"::="<expression>"::="<hello>
-<hello>::=<identifier>"::="<expression><bb>
+<hello>::=<identifier>"::="(<expression>("aa"<bb>))
 <aa>::="asds"
 ';
 $lexParser = new \Parser\BnfParser();
