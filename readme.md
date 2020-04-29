@@ -27,6 +27,8 @@ $rs = $analyzer->run($words);
 ]
 ```
 
+
+
 ## 输出   
 ```
 [
@@ -67,3 +69,6 @@ foreach ($ss as $s) {
     print_r($rs);
 }
 ```
+
+todo 改写成java版
+todo 实现sql语句解析
